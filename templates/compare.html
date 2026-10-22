@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Compare Products | NutriLens AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+          rel="stylesheet">
+
+
+    <style>
+
+        /* =====================================================
+           COMPARE PAGE
+        ===================================================== */
+
+        .compare-page {
+            min-height: 100vh;
+
+            padding: 45px 6% 70px;
+
+            background: var(--cream);
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .compare-header {
+            margin-bottom: 35px;
+        }
+
+        .compare-kicker {
+            display: inline-block;
+
+            margin-bottom: 8px;
+
+            color: var(--green);
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.2px;
+
+            text-transform: uppercase;
+        }
+
+        .compare-title {
+            margin: 0;
+
+            color: var(--green-dark);
+
+            font-family: "Outfit", sans-serif;
+
+            font-size: 36px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.7px;
+        }
+
+        .compare-description {
+            max-width: 650px;
+
+            margin: 10px 0 0;
+
+            color: var(--text-muted);
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           PRODUCT HEADER CARDS
+        ===================================================== */
+
+        .products-comparison {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 22px;
+
+            margin-bottom: 25px;
+        }
+
+        .comparison-product {
+            position: relative;
+
+            padding: 25px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 18px;
+
+            box-shadow: var(--shadow-sm);
+        }
+
+        .comparison-product-label {
+            margin-bottom: 8px;
+
+            color: var(--text-light);
+
+            font-size: 9px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+        }
+
+        .comparison-product-name {
+            margin: 0;
+
+            color: var(--green-dark);
+
+            font-family: "Outfit", sans-serif;
+
+            font-size: 24px;
+
+            font-weight: 800;
+        }
+
+        .comparison-product-brand {
+            margin-top: 5px;
+
+            color: var(--text-muted);
+
+            font-size: 12px;
+        }
+
+        .comparison-product-category {
+            display: inline-block;
+
+            margin-top: 14px;
+
+            padding: 6px 11px;
+
+            background: #f1f7f2;
+
+            color: var(--green-dark);
+
+            border: 1px solid #dce9df;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+        }
+
+
+        /* =====================================================
+           COMPARISON TABLE
+        ===================================================== */
+
+        .comparison-card {
+            overflow: hidden;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 18px;
+
+            box-shadow: var(--shadow-sm);
+        }
+
+        .comparison-card-header {
+            padding: 20px 25px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-card-header h2 {
+            margin: 0;
+
+            color: var(--green-dark);
+
+            font-family: "Outfit", sans-serif;
+
+            font-size: 20px;
+
+            font-weight: 800;
+        }
+
+        .comparison-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .comparison-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 650px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 17px 20px;
+
+            border-bottom: 1px solid var(--border);
+
+            text-align: center;
+        }
+
+        .comparison-table th {
+            background: #f7f8f3;
+
+            color: var(--green-dark);
+
+            font-size: 11px;
+
+            font-weight: 800;
+        }
+
+        .comparison-table th:first-child,
+        .comparison-table td:first-child {
+            text-align: left;
+        }
+
+        .comparison-table td:first-child {
+            color: var(--text-muted);
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .comparison-table td {
+            color: var(--green-dark);
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        /* =====================================================
+           HEALTH SCORE
+        ===================================================== */
+
+        .health-score-row td {
+            background: #fbfaf5;
+        }
+
+        .health-score-value {
+            font-size: 20px !important;
+
+            font-weight: 800 !important;
+        }
+
+
+        /* =====================================================
+           PREDICTION BADGE
+        ===================================================== */
+
+        .prediction-badge {
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 7px 12px;
+
+            border-radius: 20px;
+
+            background: #eef7ef;
+
+            color: #2d7042;
+
+            font-size: 10px;
+
+            font-weight: 800;
+        }
+
+
+        /* =====================================================
+           BOTTOM ACTIONS
+        ===================================================== */
+
+        .compare-actions {
+            display: flex;
+
+            justify-content: center;
+
+            margin-top: 28px;
+        }
+
+        .back-history-button {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 12px 20px;
+
+            background: var(--green-dark);
+
+            color: white;
+
+            border-radius: 11px;
+
+            text-decoration: none;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            transition: all .2s ease;
+        }
+
+        .back-history-button:hover {
+            transform: translateY(-2px);
+
+            box-shadow: var(--shadow-md);
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 750px) {
+
+            .compare-page {
+                padding: 35px 5% 55px;
+            }
+
+            .products-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .compare-title {
+                font-size: 30px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+
+        <!-- BRAND -->
+
+        <a href="/" class="brand">
+
+            <div class="brand-icon">
+                <span>NL</span>
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    NutriLens
+                </strong>
+
+                <small>
+                    AI
+                </small>
+
+            </div>
+
+        </a>
+
+
+        <!-- NAVIGATION -->
+
+        <div class="nav-links">
+
+            <a href="/" class="nav-link">
+
+                <span>⌂</span>
+
+                Analyzer
+
+            </a>
+
+
+            <a href="/history" class="nav-link">
+
+                <span>▤</span>
+
+                History
+
+            </a>
+
+
+            <a href="/dashboard" class="nav-link">
+
+                <span>◈</span>
+
+                Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================================================
+     MAIN CONTENT
+========================================================= -->
+
+<main class="compare-page">
+
+
+    <!-- HEADER -->
+
+    <section class="compare-header">
+
+        <span class="compare-kicker">
+            PRODUCT COMPARISON
+        </span>
+
+        <h1 class="compare-title">
+            Compare Nutrition
+        </h1>
+
+        <p class="compare-description">
+            Compare the nutritional values and machine-learning
+            predictions of two analyzed packaged food products.
+        </p>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PRODUCT CARDS
+    ====================================================== -->
+
+    <section class="products-comparison">
+
+
+        <!-- PRODUCT 1 -->
+
+        <article class="comparison-product">
+
+            <div class="comparison-product-label">
+                Product 01
+            </div>
+
+            <h2 class="comparison-product-name">
+
+                {{ products[0].product_name
+                   or "Unnamed Product" }}
+
+            </h2>
+
+            {% if products[0].brand_name %}
+
+            <div class="comparison-product-brand">
+
+                {{ products[0].brand_name }}
+
+            </div>
+
+            {% endif %}
+
+
+            {% if products[0].category %}
+
+            <span class="comparison-product-category">
+
+                {{ products[0].category }}
+
+            </span>
+
+            {% endif %}
+
+        </article>
+
+
+
+        <!-- PRODUCT 2 -->
+
+        <article class="comparison-product">
+
+            <div class="comparison-product-label">
+                Product 02
+            </div>
+
+            <h2 class="comparison-product-name">
+
+                {{ products[1].product_name
+                   or "Unnamed Product" }}
+
+            </h2>
+
+            {% if products[1].brand_name %}
+
+            <div class="comparison-product-brand">
+
+                {{ products[1].brand_name }}
+
+            </div>
+
+            {% endif %}
+
+
+            {% if products[1].category %}
+
+            <span class="comparison-product-category">
+
+                {{ products[1].category }}
+
+            </span>
+
+            {% endif %}
+
+        </article>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         COMPARISON TABLE
+    ====================================================== -->
+
+    <section class="comparison-card">
+
+
+        <div class="comparison-card-header">
+
+            <h2>
+                Nutrition Comparison
+            </h2>
+
+        </div>
+
+
+        <div class="comparison-table-wrapper">
+
+            <table class="comparison-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Nutrition
+                        </th>
+
+                        <th>
+                            {{ products[0].product_name
+                               or "Product 01" }}
+                        </th>
+
+                        <th>
+                            {{ products[1].product_name
+                               or "Product 02" }}
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    <!-- SERVING SIZE -->
+
+                    <tr>
+
+                        <td>
+                            Serving Size
+                        </td>
+
+                        <td>
+                            {{ products[0].serving_size_g|round(1) }}
+                            g
+                        </td>
+
+                        <td>
+                            {{ products[1].serving_size_g|round(1) }}
+                            g
+                        </td>
+
+                    </tr>
+
+
+                    <!-- CALORIES -->
+
+                    <tr>
+
+                        <td>
+                            Calories
+                        </td>
+
+                        <td>
+                            {{ products[0].calories|round(1) }}
+                            kcal
+                        </td>
+
+                        <td>
+                            {{ products[1].calories|round(1) }}
+                            kcal
+                        </td>
+
+                    </tr>
+
+
+                    <!-- SUGAR -->
+
+                    <tr>
+
+                        <td>
+                            Sugar
+                        </td>
+
+                        <td>
+                            {{ products[0].sugar|round(1) }}
+                            g
+                        </td>
+
+                        <td>
+                            {{ products[1].sugar|round(1) }}
+                            g
+                        </td>
+
+                    </tr>
+
+
+                    <!-- SATURATED FAT -->
+
+                    <tr>
+
+                        <td>
+                            Saturated Fat
+                        </td>
+
+                        <td>
+                            {{ products[0].saturated_fat|round(1) }}
+                            g
+                        </td>
+
+                        <td>
+                            {{ products[1].saturated_fat|round(1) }}
+                            g
+                        </td>
+
+                    </tr>
+
+
+                    <!-- SODIUM -->
+
+                    <tr>
+
+                        <td>
+                            Sodium
+                        </td>
+
+                        <td>
+                            {{ products[0].sodium|round(1) }}
+                            mg
+                        </td>
+
+                        <td>
+                            {{ products[1].sodium|round(1) }}
+                            mg
+                        </td>
+
+                    </tr>
+
+
+                    <!-- PROTEIN -->
+
+                    <tr>
+
+                        <td>
+                            Protein
+                        </td>
+
+                        <td>
+                            {{ products[0].protein|round(1) }}
+                            g
+                        </td>
+
+                        <td>
+                            {{ products[1].protein|round(1) }}
+                            g
+                        </td>
+
+                    </tr>
+
+
+                    <!-- FIBER -->
+
+                    <tr>
+
+                        <td>
+                            Dietary Fiber
+                        </td>
+
+                        <td>
+                            {{ products[0].dietary_fiber|round(1) }}
+                            g
+                        </td>
+
+                        <td>
+                            {{ products[1].dietary_fiber|round(1) }}
+                            g
+                        </td>
+
+                    </tr>
+
+
+                    <!-- HEALTH SCORE -->
+
+                    <tr class="health-score-row">
+
+                        <td>
+                            Health Score
+                        </td>
+
+                        <td class="health-score-value">
+
+                            {{ products[0].health_score }}
+
+                        </td>
+
+                        <td class="health-score-value">
+
+                            {{ products[1].health_score }}
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- SCORE CATEGORY -->
+
+                    <tr>
+
+                        <td>
+                            Score Category
+                        </td>
+
+                        <td>
+
+                            <span class="prediction-badge">
+
+                                {{ products[0].score_category }}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <span class="prediction-badge">
+
+                                {{ products[1].score_category }}
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ML PREDICTION -->
+
+                    <tr>
+
+                        <td>
+                            Random Forest Prediction
+                        </td>
+
+                        <td>
+
+                            <span class="prediction-badge">
+
+                                {{ products[0].ml_prediction }}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <span class="prediction-badge">
+
+                                {{ products[1].ml_prediction }}
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         BACK BUTTON
+    ====================================================== -->
+
+    <div class="compare-actions">
+
+        <a href="/history"
+           class="back-history-button">
+
+            ← Back to History
+
+        </a>
+
+    </div>
+
+
+</main>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analysis History | NutriLens AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+    
+/* =========================================================
+   COMPARE BAR
+========================================================= */
+
+.compare-bar {
+    grid-column: 1 / -1;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 16px 20px;
+
+    background: var(--green-dark);
+
+    border-radius: 15px;
+
+    color: white;
+
+    box-shadow: var(--shadow-md);
+
+    margin-top: 4px;
+}
+
+.compare-bar-info {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.compare-bar-info strong {
+    font-size: 13px;
+}
+
+.compare-bar-info span {
+    color: rgba(255, 255, 255, 0.7);
+
+    font-size: 10px;
+}
+
+#compareButton {
+    border: none;
+
+    padding: 11px 18px;
+
+    border-radius: 10px;
+
+    background: white;
+
+    color: var(--green-dark);
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition: all .2s ease;
+}
+
+#compareButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+#compareButton:disabled {
+    opacity: 0.45;
+
+    cursor: not-allowed;
+}
+/* =========================================================
+   COMPARE SELECTOR
+========================================================= */
+
+.compare-selector {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 14px;
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    width: fit-content;
+}
+
+.compare-selector input {
+    width: 15px;
+
+    height: 15px;
+
+    margin: 0;
+
+    accent-color: var(--green);
+
+    cursor: pointer;
+}
+
+.compare-selector:hover {
+    color: var(--green-dark);
+}
+        /* =========================================================
+           HISTORY PAGE
+        ========================================================= */
+
+        /* =========================================================
+   ANALYSIS SUMMARY
+========================================================= */
+
+.analysis-summary {
+    margin-bottom: 18px;
+}
+
+.score-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.score-box {
+    padding: 15px;
+    background: var(--cream);
+    border-radius: 13px;
+    border: 1px solid var(--border);
+    min-width: 0;
+}
+
+.score-label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-light);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+
+.score-value {
+    color: var(--green-dark);
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.prediction-value {
+    font-size: 16px;
+}
+
+/* =========================================================
+   NUTRITION SUMMARY
+========================================================= */
+
+.nutrition-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.nutrition-item {
+    padding: 10px 8px;
+    background: #faf9f4;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+    min-width: 0;
+}
+
+.nutrition-item span {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-light);
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nutrition-item strong {
+    display: block;
+    color: var(--green-dark);
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.nutrition-item small {
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .score-main {
+        grid-template-columns: 1fr;
+    }
+
+    .nutrition-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .nutrition-summary {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+        .history-page {
+            min-height: 100vh;
+            padding: 40px 6% 70px;
+            background: var(--cream);
+        }
+
+
+        /* =========================================================
+           PAGE HEADER
+        ========================================================= */
+
+        .history-heading {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: end;
+            gap: 20px 25px;
+            margin-bottom: 30px;
+        }
+
+        .history-title {
+            margin: 0;
+            color: var(--green-dark);
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .history-subtitle {
+            margin: 8px 0 0;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .history-count {
+            padding: 10px 16px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--green-dark);
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+            white-space: nowrap;
+        }
+
+
+        /* =========================================================
+           SEARCH BOX
+        ========================================================= */
+
+        .history-search {
+            position: relative;
+            width: 330px;
+            grid-column: 1 / -1;
+            margin-top: 0;
+        }
+
+        .history-search input {
+            width: 100%;
+            height: 44px;
+
+            padding: 0 15px 0 42px;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            background: white;
+            color: var(--green-dark);
+
+            font-family: "DM Sans", sans-serif;
+            font-size: 11px;
+
+            outline: none;
+            box-sizing: border-box;
+
+            box-shadow: var(--shadow-sm);
+
+            transition:
+                border-color .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .history-search input::placeholder {
+            color: var(--text-light);
+        }
+
+        .history-search input:focus {
+            border-color: var(--green);
+
+            box-shadow:
+                0 0 0 3px rgba(48, 107, 73, 0.08);
+        }
+
+        .history-search-icon {
+            position: absolute;
+
+            left: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: var(--green);
+
+            font-size: 13px;
+
+            pointer-events: none;
+        }
+
+
+        /* =========================================================
+           HISTORY GRID
+        ========================================================= */
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+            align-items: start;
+        }
+
+
+        /* =========================================================
+           HISTORY CARD
+        ========================================================= */
+
+        .history-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 18px;
+
+            padding: 22px;
+
+            box-shadow: var(--shadow-sm);
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                border-color .2s ease;
+        }
+
+        .history-card:hover {
+            transform: translateY(-3px);
+
+            box-shadow: var(--shadow-md);
+
+            border-color: rgba(48, 107, 73, 0.25);
+        }
+
+
+        /* =========================================================
+           CARD TOP
+        ========================================================= */
+
+        .history-card-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+        }
+
+        .product-info {
+            min-width: 0;
+        }
+
+        .product-name {
+            margin: 0;
+
+            color: var(--green-dark);
+
+            font-size: 19px;
+
+            font-weight: 800;
+
+            line-height: 1.25;
+
+            word-break: break-word;
+        }
+
+        .product-brand {
+            margin-top: 6px;
+
+            color: var(--text-muted);
+
+            font-size: 12px;
+        }
+
+
+        /* =========================================================
+           CATEGORY
+        ========================================================= */
+
+        .product-category {
+            display: inline-flex;
+
+            align-items: center;
+
+            padding: 6px 10px;
+
+            background: #f3f8f4;
+
+            color: var(--green-dark);
+
+            border: 1px solid #dce9df;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+
+        /* =========================================================
+           SCORE SECTION
+        ========================================================= */
+
+        .score-area {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 12px;
+
+            margin-bottom: 18px;
+        }
+
+        .score-box {
+            padding: 15px;
+
+            background: var(--cream);
+
+            border-radius: 13px;
+
+            border: 1px solid var(--border);
+        }
+
+        .score-label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: var(--text-light);
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.7px;
+        }
+
+        .score-value {
+            color: var(--green-dark);
+
+            font-size: 23px;
+
+            font-weight: 800;
+        }
+
+
+        /* =========================================================
+           STATUS BADGES
+        ========================================================= */
+
+        .status-row {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-bottom: 18px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+            padding: 7px 10px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+        }
+
+        .status-badge.score {
+            background: #eef7ef;
+
+            color: #2d7042;
+        }
+
+        .status-badge.ml {
+            background: #fff4e8;
+
+            color: #a75d20;
+        }
+
+
+        /* =========================================================
+           CARD FOOTER
+        ========================================================= */
+
+        .history-card-footer {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding-top: 14px;
+
+            border-top: 1px solid var(--border);
+
+            color: var(--text-light);
+
+            font-size: 10px;
+        }
+
+        .history-id {
+            font-weight: 700;
+
+            color: var(--green);
+        }
+
+
+        /* =========================================================
+           EMPTY STATE
+        ========================================================= */
+
+        .empty-history {
+            padding: 70px 20px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 18px;
+
+            text-align: center;
+
+            box-shadow: var(--shadow-sm);
+        }
+
+        .empty-icon {
+            width: 62px;
+
+            height: 62px;
+
+            margin: 0 auto 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #eef7ef;
+
+            color: var(--green);
+
+            font-size: 25px;
+        }
+
+        .empty-history h3 {
+            margin: 0 0 8px;
+
+            color: var(--green-dark);
+
+            font-size: 20px;
+        }
+
+        .empty-history p {
+            margin: 0;
+
+            color: var(--text-muted);
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           NO SEARCH RESULTS
+        ========================================================= */
+
+        .no-search-results {
+            display: none;
+
+            grid-column: 1 / -1;
+
+            padding: 55px 20px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 18px;
+
+            text-align: center;
+        }
+
+        .no-search-results h3 {
+            margin: 0 0 8px;
+
+            color: var(--green-dark);
+
+            font-size: 18px;
+        }
+
+        .no-search-results p {
+            margin: 0;
+
+            color: var(--text-muted);
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1050px) {
+
+            .history-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 800px) {
+
+            .history-page {
+                padding: 30px 5% 55px;
+            }
+
+            .history-heading {
+                grid-template-columns: 1fr;
+                align-items: start;
+            }
+
+            .history-count {
+                width: fit-content;
+            }
+
+            .history-search {
+                width: 100%;
+            }
+
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        @media (max-width: 480px) {
+
+            .history-title {
+                font-size: 28px;
+            }
+
+            .history-card {
+                padding: 18px;
+            }
+
+            .history-card-top {
+                flex-direction: column;
+            }
+
+            .score-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         NAVIGATION BAR
+    ========================================================= -->
+
+<!-- ========================= NAVBAR ========================= -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <!-- BRAND -->
+
+        <a href="/" class="brand">
+
+            <div class="brand-icon">
+                <span>NL</span>
+            </div>
+
+            <div class="brand-text">
+                <strong>NutriLens</strong>
+                <small>AI</small>
+            </div>
+
+        </a>
+
+
+        <!-- NAVIGATION LINKS -->
+
+        <div class="nav-links">
+
+            <a href="/" class="nav-link">
+                <span>⌂</span>
+                Analyzer
+            </a>
+
+            <a href="/history" class="nav-link active">
+                <span>▤</span>
+                History
+            </a>
+
+            <a href="/dashboard" class="nav-link">
+                <span>◈</span>
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+    <!-- =========================================================
+         HISTORY PAGE
+    ========================================================= -->
+
+    <main class="history-page">
+
+
+        <!-- PAGE HEADER -->
+
+        <section class="history-heading">
+
+            <div>
+
+                <h1 class="history-title">
+                    Analysis History
+                </h1>
+
+                <p class="history-subtitle">
+                    Review your previously analyzed packaged food
+                    products and their nutrition results.
+                </p>
+
+            </div>
+
+
+            <div class="history-count">
+
+                {{ predictions|length }}
+
+                {% if predictions|length == 1 %}
+                    Analysis
+                {% else %}
+                    Analyses
+                {% endif %}
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="history-search">
+
+                <div class="history-search-icon">
+                    🔍
+                </div>
+
+                <input
+                    type="text"
+                    id="productSearch"
+                    placeholder="Search product by name..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+        <!-- =====================================================
+     COMPARE BAR
+====================================================== -->
+
+<div class="compare-bar" id="compareBar">
+
+    <div class="compare-bar-info">
+
+        <strong id="compareCount">
+            0 products selected
+        </strong>
+
+        <span>
+            Select exactly 2 products to compare.
+        </span>
+
+    </div>
+
+
+    <button
+        type="button"
+        id="compareButton"
+        disabled
+    >
+        Compare Selected
+    </button>
+
+</div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             HISTORY CONTENT
+        ====================================================== -->
+
+        {% if predictions %}
+
+        <section class="history-grid"
+                 id="historyGrid">
+
+
+            {% for prediction in predictions %}
+
+            <article
+    class="history-card"
+    data-product-name="{{ prediction.product_name or '' }}"
+>
+    
+    <!-- COMPARISON SELECTOR -->
+
+    <label class="compare-selector">
+
+        <input
+            type="checkbox"
+            class="compare-checkbox"
+            value="{{ prediction.id }}"
+        >
+
+        <span>
+            Select for comparison
+        </span>
+
+    </label>
+
+
+                <!-- PRODUCT INFORMATION -->
+
+                <div class="history-card-top">
+
+                    <div class="product-info">
+
+                        <h2 class="product-name">
+                            {{ prediction.product_name or "Unnamed Product" }}
+                        </h2>
+
+                        {% if prediction.brand_name %}
+
+                        <div class="product-brand">
+                            {{ prediction.brand_name }}
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    {% if prediction.category %}
+
+                    <div class="product-category">
+                        {{ prediction.category }}
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- SCORE + NUTRITION -->
+                <div class="analysis-summary">
+
+                    <div class="score-main">
+
+                        <div class="score-box">
+                            <span class="score-label">Health Score</span>
+                            <span class="score-value">
+                                {{ prediction.health_score }}
+                            </span>
+                        </div>
+
+                        <div class="score-box">
+                            <span class="score-label">ML Prediction</span>
+                            <span class="score-value prediction-value">
+                                {{ prediction.ml_prediction }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="nutrition-summary">
+
+                        <div class="nutrition-item">
+                            <span>Calories</span>
+                            <strong>
+                                {{ prediction.calories|round(1) }}
+                                <small>kcal</small>
+                            </strong>
+                        </div>
+
+                        <div class="nutrition-item">
+                            <span>Sugar</span>
+                            <strong>
+                                {{ prediction.sugar|round(1) }}
+                                <small>g</small>
+                            </strong>
+                        </div>
+
+                        <div class="nutrition-item">
+                            <span>Protein</span>
+                            <strong>
+                                {{ prediction.protein|round(1) }}
+                                <small>g</small>
+                            </strong>
+                        </div>
+
+                        <div class="nutrition-item">
+                            <span>Sodium</span>
+                            <strong>
+                                {{ prediction.sodium|round(1) }}
+                                <small>mg</small>
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- STATUS -->
+
+                <div class="status-row">
+
+
+                    <span class="status-badge score">
+
+                        ●
+
+                        Score:
+                        {{ prediction.score_category }}
+
+                    </span>
+
+
+                    <span class="status-badge ml">
+
+                        ✦
+
+                        Model:Random Forest
+                        
+                    </span>
+
+
+                </div>
+
+
+
+                <!-- FOOTER -->
+
+                <div class="history-card-footer">
+
+                    <span class="history-id">
+                        Analysis #{{ prediction.id }}
+                    </span>
+
+                    <span>
+                        {{ prediction.created_at }}
+                    </span>
+
+                </div>
+
+
+            </article>
+
+            {% endfor %}
+
+
+            <!-- NO SEARCH RESULTS -->
+
+            <div class="no-search-results"
+                 id="noSearchResults">
+
+                <h3>
+                    No products found
+                </h3>
+
+                <p>
+                    Try searching with a different product name.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+        {% else %}
+
+
+        <!-- EMPTY HISTORY -->
+
+        <section class="empty-history">
+
+            <div class="empty-icon">
+                📊
+            </div>
+
+            <h3>
+                No analysis history yet
+            </h3>
+
+            <p>
+                Analyze your first packaged food product to
+                see the result here.
+            </p>
+
+        </section>
+
+        {% endif %}
+
+
+    </main>
+
+
+
+    <!-- =========================================================
+         SEARCH JAVASCRIPT
+    ========================================================= -->
+
+    <script>
+/* =========================================================
+   PRODUCT COMPARISON SELECTION
+========================================================= */
+
+const compareCheckboxes =
+    document.querySelectorAll(".compare-checkbox");
+
+const compareButton =
+    document.getElementById("compareButton");
+
+const compareCount =
+    document.getElementById("compareCount");
+
+
+function updateCompareSelection() {
+
+    const selected =
+        document.querySelectorAll(
+            ".compare-checkbox:checked"
+        );
+
+    const count = selected.length;
+
+
+    if (count === 0) {
+
+        compareCount.textContent =
+            "0 products selected";
+
+    } else if (count === 1) {
+
+        compareCount.textContent =
+            "1 product selected";
+
+    } else {
+
+        compareCount.textContent =
+            count + " products selected";
+
+    }
+
+
+    /*
+     * Only allow comparison when
+     * exactly 2 products are selected.
+     */
+
+    compareButton.disabled =
+        count !== 2;
+
+}
+
+
+/*
+ * Listen for checkbox changes.
+ */
+
+compareCheckboxes.forEach(
+    function (checkbox) {
+
+        checkbox.addEventListener(
+            "change",
+            updateCompareSelection
+        );
+
+    }
+);
+/* =========================================================
+   OPEN COMPARISON PAGE
+========================================================= */
+
+compareButton.addEventListener(
+    "click",
+    function () {
+
+        const selected =
+            document.querySelectorAll(
+                ".compare-checkbox:checked"
+            );
+
+
+        if (selected.length !== 2) {
+            return;
+        }
+
+
+        const productId1 =
+            selected[0].value;
+
+        const productId2 =
+            selected[1].value;
+
+
+        /*
+         * Send the two selected IDs
+         * to Flask.
+         */
+
+        window.location.href =
+            "/compare?ids=" +
+            encodeURIComponent(productId1) +
+            "&ids=" +
+            encodeURIComponent(productId2);
+
+    }
+);
+        const searchInput =
+            document.getElementById("productSearch");
+
+        const historyCards =
+            document.querySelectorAll(".history-card");
+
+        const noSearchResults =
+            document.getElementById("noSearchResults");
+
+
+        /*
+         * Search products by name.
+         *
+         * The search is:
+         * - Case insensitive
+         * - Real-time
+         * - Partial match
+         *
+         * Example:
+         *
+         * Search: "hide"
+         *
+         * Result:
+         * "HIDE & SEEK"
+         */
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                "input",
+                function () {
+
+                    const searchText =
+                        this.value
+                            .trim()
+                            .toLowerCase();
+
+                    let visibleCards = 0;
+
+
+                    historyCards.forEach(
+                        function (card) {
+
+                            const productName =
+                                (
+                                    card.getAttribute(
+                                        "data-product-name"
+                                    ) || ""
+                                ).toLowerCase();
+
+
+                            if (
+                                productName.includes(
+                                    searchText
+                                )
+                            ) {
+
+                                card.style.display = "";
+
+                                visibleCards++;
+
+                            } else {
+
+                                card.style.display = "none";
+
+                            }
+
+                        }
+                    );
+
+
+                    /*
+                     * Show "No products found"
+                     * only when:
+                     *
+                     * 1. User has typed something
+                     * 2. No product matches
+                     */
+
+                    if (noSearchResults) {
+
+                        if (
+                            searchText !== "" &&
+                            visibleCards === 0
+                        ) {
+
+                            noSearchResults.style.display =
+                                "block";
+
+                        } else {
+
+                            noSearchResults.style.display =
+                                "none";
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+    </script>
+
+
+</body>
+</html>

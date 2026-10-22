@@ -1,0 +1,22 @@
+Nutritional Healthy Predictor Project -
+
+Q) How have you decided the health score in your project?
+The health score was derived from nutrient-based scoring using per - 100g nutritional values, with FSSAI's Indian Nutrition Rating framework used as the reference.
+
+The official FSSAI material describes the INR calculation as:
+
+Final INR score = baseline points − positive nutrient points.
+
+Q) What does the apply() do?
+- df_clean["calorie_points"] = df_clean["calories_per_100g"].apply(calorie_points)
+Takes every values in calories_per_100g, send it through our calorie_points() function, and stores it in the calories_points column.
+
+🧠 Important concept
+
+We're creating new features from existing data.
+
+This is called feature engineering.
+Example - 
+sugar_per_100g
+       ↓
+sugar_points

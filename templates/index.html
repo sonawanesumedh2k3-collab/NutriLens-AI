@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        NutriLens AI | Packaged Food Nutrition Analyzer
+    </title>
+
+
+    <!-- Main stylesheet -->
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+
+    <!-- Google Fonts -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
+         PAGE-SPECIFIC FIXED STYLES
+    ====================================================== -->
+
+    <style>
+
+        /* =================================================
+           PRODUCT INFORMATION
+        ================================================= */
+
+        .product-info-section {
+            margin-bottom: 28px;
+        }
+
+
+        .product-info-section .section-label {
+            margin-bottom: 14px;
+
+            color: var(--green-dark);
+
+            font-family: "Outfit", sans-serif;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.2px;
+
+            text-transform: uppercase;
+        }
+
+
+        /* Product Name / Brand / Category grid */
+
+        .product-info-section .form-grid {
+
+            display: grid !important;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr)) !important;
+
+            gap: 18px !important;
+
+            width: 100% !important;
+
+        }
+
+
+        /* =================================================
+           PRODUCT FIELD CARD
+        ================================================= */
+
+        .product-field {
+
+            position: relative;
+
+            width: 100% !important;
+
+            min-width: 0 !important;
+
+            box-sizing: border-box !important;
+
+            padding: 18px !important;
+
+            background: white !important;
+
+            border: 1px solid var(--border) !important;
+
+            border-radius: 17px !important;
+
+            box-shadow: var(--shadow-sm) !important;
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                border-color .2s ease;
+
+        }
+
+
+        .product-field:hover {
+
+            transform: translateY(-1px);
+
+            box-shadow: var(--shadow-md) !important;
+
+        }
+
+
+        /* =================================================
+           PRODUCT FIELD HEADER
+        ================================================= */
+
+        .product-field-header {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .product-field-icon {
+
+            width: 40px;
+
+            height: 40px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 11px;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+        }
+
+
+        /* Product */
+
+        .product-icon {
+
+            background: var(--green-soft);
+
+            color: var(--green);
+
+        }
+
+
+        /* Brand */
+
+        .brand-icon-field {
+
+            background: var(--orange-light);
+
+            color: var(--orange);
+
+        }
+
+
+        /* Category */
+
+        .category-icon-field {
+
+            background: #e8f1ff;
+
+            color: #3e6fae;
+
+        }
+
+
+        /* =================================================
+           PRODUCT FIELD LABELS
+        ================================================= */
+
+        .product-field-header label {
+
+            display: block !important;
+
+            margin: 0 0 3px !important;
+
+            color: var(--text-dark) !important;
+
+            font-family: "Outfit", sans-serif !important;
+
+            font-size: 13px !important;
+
+            font-weight: 800 !important;
+
+        }
+
+
+        .product-field-header small {
+
+            display: block;
+
+            color: var(--text-light);
+
+            font-size: 10px;
+
+            line-height: 1.3;
+
+        }
+
+
+        /* =================================================
+           PRODUCT INPUTS
+        ================================================= */
+
+        .product-field > input {
+
+            width: 100% !important;
+
+            height: 48px !important;
+
+            padding: 0 13px !important;
+
+            box-sizing: border-box !important;
+
+            border: 1px solid #e4e3dc !important;
+
+            border-radius: 11px !important;
+
+            background: #f8f8f5 !important;
+
+            outline: none !important;
+
+            color: var(--text-dark) !important;
+
+            font-family: "DM Sans", sans-serif !important;
+
+            font-size: 13px !important;
+
+            font-weight: 600 !important;
+
+        }
+
+
+        .product-field > input::placeholder {
+
+            color: #a6aea9 !important;
+
+            font-weight: 400 !important;
+
+        }
+
+
+        .product-field > input:focus {
+
+            background: white !important;
+
+            border-color: var(--green) !important;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(31, 104, 71, 0.08) !important;
+
+        }
+
+
+        /* Top accent */
+
+        .product-field:nth-child(1) {
+
+            border-top:
+                3px solid var(--green) !important;
+
+        }
+
+
+        .product-field:nth-child(2) {
+
+            border-top:
+                3px solid var(--orange) !important;
+
+        }
+
+
+        .product-field:nth-child(3) {
+
+            border-top:
+                3px solid #7897c7 !important;
+
+        }
+
+
+        /* =================================================
+           NUTRITION GRID — IMPORTANT
+        ================================================= */
+
+        /*
+         * This is the second grid inside the form.
+         *
+         * Desktop:
+         * 3 cards per row
+         */
+
+        .nutrition-input-grid {
+
+            display: grid !important;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr)) !important;
+
+            gap: 20px !important;
+
+            width: 100% !important;
+
+            box-sizing: border-box !important;
+
+        }
+
+
+        /*
+         * Every nutrition card gets exactly
+         * one grid position.
+         */
+
+        .nutrition-input-grid > .input-card {
+
+            width: 100% !important;
+
+            min-width: 0 !important;
+
+            max-width: none !important;
+
+            grid-column: auto !important;
+
+            grid-row: auto !important;
+
+            box-sizing: border-box !important;
+
+        }
+
+
+        /* =================================================
+           RESULT PRODUCT CARD
+        ================================================= */
+
+        .analyzed-product-card {
+
+            margin-bottom: 18px;
+
+            padding: 20px 22px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 16px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius-md);
+
+            box-shadow: var(--shadow-sm);
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+
+        .analyzed-product-card::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 130px;
+
+            height: 130px;
+
+            border-radius: 50%;
+
+            right: -70px;
+
+            top: -65px;
+
+            background: var(--green-soft);
+
+            opacity: .7;
+
+        }
+
+
+        .product-identity-icon {
+
+            width: 52px;
+
+            height: 52px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 14px;
+
+            background: var(--green-dark);
+
+            color: white;
+
+            font-size: 20px;
+
+            position: relative;
+
+            z-index: 2;
+
+        }
+
+
+        .product-identity-content {
+
+            position: relative;
+
+            z-index: 2;
+
+            flex: 1;
+
+        }
+
+
+        .product-identity-label {
+
+            display: block;
+
+            color: var(--orange);
+
+            font-size: 8px;
+
+            font-weight: 900;
+
+            letter-spacing: 1.4px;
+
+        }
+
+
+        .product-identity-content h3 {
+
+            margin: 3px 0 0;
+
+            color: var(--green-dark);
+
+            font-family: "Outfit", sans-serif;
+
+            font-size: 25px;
+
+            line-height: 1.15;
+
+        }
+
+
+        .product-meta {
+
+            margin-top: 6px;
+
+            display: flex;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            color: var(--text-light);
+
+            font-size: 10px;
+
+        }
+
+
+        .product-meta b {
+
+            margin-right: 4px;
+
+            color: var(--green-dark);
+
+        }
+
+
+        .meta-separator {
+
+            color: #b7c1ba;
+
+        }
+
+
+        .product-status-badge {
+
+            position: relative;
+
+            z-index: 2;
+
+            padding: 8px 11px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            border-radius: 100px;
+
+            background: var(--green-soft);
+
+            color: var(--green);
+
+            font-size: 9px;
+
+            font-weight: 800;
+
+            white-space: nowrap;
+
+        }
+
+
+        .product-status-badge span {
+
+            width: 6px;
+
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: var(--green);
+
+        }
+
+
+        /* =================================================
+           MOBILE / TABLET
+        ================================================= */
+
+        @media (max-width: 1000px) {
+
+            .product-info-section .form-grid {
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr)) !important;
+
+            }
+
+
+            .nutrition-input-grid {
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr)) !important;
+
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .product-info-section .form-grid {
+
+                grid-template-columns:
+                    1fr !important;
+
+            }
+
+
+            .nutrition-input-grid {
+
+                grid-template-columns:
+                    1fr !important;
+
+            }
+
+
+            .analyzed-product-card {
+
+                align-items: flex-start;
+
+            }
+
+
+            .product-status-badge {
+
+                display: none;
+
+            }
+
+
+            .product-identity-content h3 {
+
+                font-size: 21px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+
+        <!-- BRAND -->
+
+        <a href="/" class="brand">
+
+            <div class="brand-icon">
+                <span>NL</span>
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    NutriLens
+                </strong>
+
+                <small>
+                    AI
+                </small>
+
+            </div>
+
+        </a>
+
+
+        <!-- NAVIGATION -->
+
+        <div class="nav-links">
+
+            <a href="/" class="nav-link active">
+
+                <span>⌂</span>
+
+                Analyzer
+
+            </a>
+
+
+            <a href="/history" class="nav-link">
+
+                <span>▤</span>
+
+                History
+
+            </a>
+
+
+            <a href="/dashboard" class="nav-link">
+
+                <span>◈</span>
+
+                Dashboard
+
+            </a>
+
+            <a href="/methodology" class="nav-link">
+
+                <span>✦</span>
+
+                Methodology
+            </a>
+            
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main>
+
+
+<!-- =========================================================
+     HERO SECTION
+========================================================= -->
+
+<section class="hero-section">
+
+    <div class="hero-container">
+
+
+        <!-- HERO TEXT -->
+
+        <div class="hero-content">
+
+            <div class="eyebrow">
+
+                <span class="eyebrow-dot"></span>
+
+                AI-POWERED FOOD INTELLIGENCE
+
+            </div>
+
+
+            <h1>
+
+                Know what's
+
+                <span>
+                    inside your food.
+                </span>
+
+            </h1>
+
+
+            <p class="hero-description">
+
+                Analyze the nutritional profile of packaged food
+                and get an AI-powered health prediction in seconds.
+
+            </p>
+
+
+            <div class="hero-pills">
+
+                <div class="hero-pill">
+
+                    <span>✓</span>
+
+                    Nutrition Analysis
+
+                </div>
+
+
+                <div class="hero-pill">
+
+                    <span>✓</span>
+
+                    Health Score
+
+                </div>
+
+
+                <div class="hero-pill">
+
+                    <span>✓</span>
+
+                    ML Prediction
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             FOOD VISUAL
+        ================================================== -->
+
+        <div class="food-visual">
+
+            <div class="package-shadow"></div>
+
+
+            <div class="food-package">
+
+
+                <div class="package-top">
+
+                    <span class="package-brand">
+                        NUTRILENS
+                    </span>
+
+                    <span class="package-ai">
+                        AI
+                    </span>
+
+                </div>
+
+
+                <div class="package-product">
+
+                    PACKAGED<br>
+
+                    <strong>
+                        FOOD
+                    </strong>
+
+                </div>
+
+
+                <div class="package-leaf">
+                    ✦
+                </div>
+
+
+                <div class="mini-label">
+
+                    <div class="mini-label-title">
+                        NUTRITION FACTS
+                    </div>
+
+
+                    <div class="mini-line"></div>
+
+
+                    <div class="mini-row">
+
+                        <span>
+                            Calories
+                        </span>
+
+                        <strong>
+                            240 kcal
+                        </strong>
+
+                    </div>
+
+
+                    <div class="mini-row">
+
+                        <span>
+                            Sugar
+                        </span>
+
+                        <strong>
+                            12 g
+                        </strong>
+
+                    </div>
+
+
+                    <div class="mini-row">
+
+                        <span>
+                            Protein
+                        </span>
+
+                        <strong>
+                            6 g
+                        </strong>
+
+                    </div>
+
+
+                    <div class="mini-row">
+
+                        <span>
+                            Fiber
+                        </span>
+
+                        <strong>
+                            3 g
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- AI BADGE -->
+
+            <div class="floating-badge badge-ai">
+
+                <span class="badge-icon">
+                    ✦
+                </span>
+
+                <div>
+
+                    <strong>
+                        AI Analysis
+                    </strong>
+
+                    <small>
+                        Ready to analyze
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SCORE BADGE -->
+
+            <div class="floating-badge badge-score">
+
+                <div class="score-ring">
+                    82
+                </div>
+
+                <div>
+
+                    <strong>
+                        Health Score
+                    </strong>
+
+                    <small>
+                        Smart evaluation
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     ANALYZER SECTION
+========================================================= -->
+
+<section class="analyzer-section">
+
+    <div class="section-container">
+
+
+        <!-- SECTION HEADING -->
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-kicker">
+                    PRODUCT ANALYZER
+                </span>
+
+
+                <h2>
+                    Enter the nutrition label
+                </h2>
+
+
+                <p>
+
+                    Add the values shown on your packaged food
+                    label. NutriLens AI will calculate the health
+                    score and generate an ML prediction.
+
+                </p>
+
+            </div>
+
+
+            <div class="per-serving-badge">
+
+                <span>
+                    ⓘ
+                </span>
+
+                Values should be per serving
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             FORM
+        ================================================== -->
+
+        <form
+            method="POST"
+            action="/#analysis-result"
+            class="nutrition-form"
+        >
+
+
+            <!-- =================================================
+                 PRODUCT INFORMATION
+            ================================================== -->
+
+            <div class="product-info-section">
+
+
+                <div class="section-label">
+                    PRODUCT INFORMATION
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <!-- PRODUCT NAME -->
+
+                    <div class="form-group product-field">
+
+
+                        <div class="product-field-header">
+
+
+                            <div class="product-field-icon product-icon">
+                                ✦
+                            </div>
+
+
+                            <div>
+
+                                <label for="product_name">
+                                    Product Name
+                                </label>
+
+                                <small>
+                                    Name shown on package
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <input
+                            type="text"
+                            id="product_name"
+                            name="product_name"
+                            placeholder="e.g. HIDE & SEEK"
+                            maxlength="150"
+                            required
+                            value="{{ request.form.get('product_name', '') }}"
+                        >
+
+                    </div>
+
+
+
+                    <!-- BRAND NAME -->
+
+                    <div class="form-group product-field">
+
+
+                        <div class="product-field-header">
+
+
+                            <div class="product-field-icon brand-icon-field">
+                                ◉
+                            </div>
+
+
+                            <div>
+
+                                <label for="brand_name">
+                                    Brand Name
+                                </label>
+
+                                <small>
+                                    Manufacturer or brand
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <input
+                            type="text"
+                            id="brand_name"
+                            name="brand_name"
+                            placeholder="e.g. Parle"
+                            maxlength="100"
+                            value="{{ request.form.get('brand_name', '') }}"
+                        >
+
+                    </div>
+
+
+
+                    <!-- CATEGORY -->
+
+                    <div class="form-group product-field">
+
+
+                        <div class="product-field-header">
+
+
+                            <div class="product-field-icon category-icon-field">
+                                ◆
+                            </div>
+
+
+                            <div>
+
+                                <label for="category">
+                                    Category
+                                </label>
+
+                                <small>
+                                    Type of packaged food
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <input
+                            type="text"
+                            id="category"
+                            name="category"
+                            placeholder="e.g. Biscuit"
+                            maxlength="80"
+                            value="{{ request.form.get('category', '') }}"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 NUTRITION INPUT GRID
+            ================================================== -->
+
+            <div
+                class="form-grid nutrition-input-grid"
+                style="
+                    display: grid !important;
+                    grid-template-columns:
+                        repeat(3, minmax(0, 1fr)) !important;
+                    gap: 20px !important;
+                    width: 100% !important;
+                "
+            >
+
+
+                <!-- =================================================
+                     SERVING SIZE
+                ================================================== -->
+
+                <div class="input-card featured-input">
+
+
+                    <div class="input-card-header">
+
+                        <div class="input-icon serving-icon">
+                            ⚖
+                        </div>
+
+
+                        <div>
+
+                            <label for="serving_size">
+                                Serving Size
+                            </label>
+
+                            <small>
+                                Package serving
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-wrapper">
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            id="serving_size"
+                            name="serving_size"
+                            placeholder="e.g. 100"
+                            required
+                        >
+
+                        <span>
+                            g
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     CALORIES
+                ================================================== -->
+
+                <div class="input-card">
+
+
+                    <div class="input-card-header">
+
+                        <div class="input-icon calories-icon">
+                            ◉
+                        </div>
+
+
+                        <div>
+
+                            <label for="calories">
+                                Calories
+                            </label>
+
+                            <small>
+                                Energy
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-wrapper">
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            id="calories"
+                            name="calories"
+                            placeholder="e.g. 250"
+                            required
+                        >
+
+                        <span>
+                            kcal
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     SUGAR
+                ================================================== -->
+
+                <div class="input-card">
+
+
+                    <div class="input-card-header">
+
+                        <div class="input-icon sugar-icon">
+                            ◆
+                        </div>
+
+
+                        <div>
+
+                            <label for="sugar">
+                                Sugar
+                            </label>
+
+                            <small>
+                                Total sugar
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-wrapper">
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            id="sugar"
+                            name="sugar"
+                            placeholder="e.g. 12"
+                            required
+                        >
+
+                        <span>
+                            g
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     SATURATED FAT
+                ================================================== -->
+
+                <div class="input-card">
+
+
+                    <div class="input-card-header">
+
+                        <div class="input-icon fat-icon">
+                            ◇
+                        </div>
+
+
+                        <div>
+
+                            <label for="saturated_fat">
+                                Saturated Fat
+                            </label>
+
+                            <small>
+                                Saturated fats
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-wrapper">
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            id="saturated_fat"
+                            name="saturated_fat"
+                            placeholder="e.g. 5"
+                            required
+                        >
+
+                        <span>
+                            g
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     SODIUM
+                ================================================== -->
+
+                <div class="input-card">
+
+
+                    <div class="input-card-header">
+
+                        <div class="input-icon sodium-icon">
+                            ≋
+                        </div>
+
+
+                        <div>
+
+                            <label for="sodium">
+                                Sodium
+                            </label>
+
+                            <small>
+                                Salt-related
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-wrapper">
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            id="sodium"
+                            name="sodium"
+                            placeholder="e.g. 300"
+                            required
+                        >
+
+                        <span>
+                            mg
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     PROTEIN
+                ================================================== -->
+
+                <div class="input-card">
+
+
+                    <div class="input-card-header">
+
+                        <div class="input-icon protein-icon">
+                            ✦
+                        </div>
+
+
+                        <div>
+
+                            <label for="protein">
+                                Protein
+                            </label>
+
+                            <small>
+                                Protein content
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-wrapper">
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            id="protein"
+                            name="protein"
+                            placeholder="e.g. 8"
+                            required
+                        >
+
+                        <span>
+                            g
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     DIETARY FIBER
+                ================================================== -->
+
+                <div class="input-card">
+
+
+                    <div class="input-card-header">
+
+                        <div class="input-icon fiber-icon">
+                            ❋
+                        </div>
+
+
+                        <div>
+
+                            <label for="fiber">
+                                Dietary Fiber
+                            </label>
+
+                            <small>
+                                Fiber content
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-wrapper">
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            id="fiber"
+                            name="fiber"
+                            placeholder="e.g. 4"
+                            required
+                        >
+
+                        <span>
+                            g
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ANALYZE ACTION
+            ================================================== -->
+
+            <div class="analyze-action">
+
+
+                <div class="action-note">
+
+                    <span class="action-check">
+                        ✓
+                    </span>
+
+
+                    <div>
+
+                        <strong>
+                            AI + Rule-Based Analysis
+                        </strong>
+
+                        <small>
+
+                            Your nutrition values are converted
+                            to a standardized per-100g format.
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="analyze-button"
+                >
+
+                    <span class="button-icon">
+                        ✦
+                    </span>
+
+                    Analyze Product
+
+                    <span class="button-arrow">
+                        →
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     ERROR
+========================================================= -->
+
+{% if error %}
+
+<section class="result-section error-result">
+
+    <div class="section-container">
+
+        <div class="error-box">
+
+            <span class="error-icon">
+                !
+            </span>
+
+            <div>
+
+                <strong>
+                    Something went wrong
+                </strong>
+
+                <p>
+                    {{ error }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =========================================================
+     RESULT
+========================================================= -->
+
+{% if result %}
+
+<section
+    class="result-section"
+    id="analysis-result"
+>
+
+    <div class="section-container">
+
+
+        <!-- RESULT HEADER -->
+
+        <div class="result-header">
+
+            <div>
+
+                <span class="section-kicker">
+                    ANALYSIS COMPLETE
+                </span>
+
+                <h2>
+                    Your product analysis
+                </h2>
+
+            </div>
+
+
+            <div class="result-status">
+
+                <span class="status-dot"></span>
+
+                Prediction saved
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUCT IDENTITY
+        ================================================== -->
+
+        <div class="analyzed-product-card">
+
+
+            <div class="product-identity-icon">
+                ◈
+            </div>
+
+
+            <div class="product-identity-content">
+
+                <span class="product-identity-label">
+                    PRODUCT ANALYZED
+                </span>
+
+
+                <h3>
+                    {{ result.product_name }}
+                </h3>
+
+
+                <div class="product-meta">
+
+
+                    {% if result.brand_name %}
+
+                    <span>
+
+                        <b>
+                            Brand
+                        </b>
+
+                        {{ result.brand_name }}
+
+                    </span>
+
+                    {% endif %}
+
+
+                    {% if result.category %}
+
+                    <span class="meta-separator">
+                        •
+                    </span>
+
+                    <span>
+
+                        <b>
+                            Category
+                        </b>
+
+                        {{ result.category }}
+
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="product-status-badge">
+
+                <span></span>
+
+                Analyzed
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             RESULT CARDS
+        ================================================== -->
+
+        <div class="result-grid">
+
+
+            <!-- ML PREDICTION -->
+
+            <div class="result-card prediction-card">
+
+                <div class="result-card-top">
+
+                    <span class="result-label">
+                        ML PREDICTION
+                    </span>
+
+                    <span class="result-symbol">
+                        ✦
+                    </span>
+
+                </div>
+
+
+                <div class="prediction-value">
+                    {{ result.prediction }}
+                </div>
+
+
+                <p>
+                    Random Forest model prediction
+                </p>
+
+            </div>
+
+
+
+            <!-- HEALTH SCORE -->
+
+            <div class="result-card score-card">
+
+                <div class="result-card-top">
+
+                    <span class="result-label">
+                        HEALTH SCORE
+                    </span>
+
+                    <span class="result-symbol">
+                        ◉
+                    </span>
+
+                </div>
+
+
+                <div class="big-score">
+                    {{ result.score }}
+                </div>
+
+
+                <p>
+
+                    Lower score indicates a better
+                    nutritional profile.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- SCORE CATEGORY -->
+
+            <div class="result-card category-card">
+
+                <div class="result-card-top">
+
+                    <span class="result-label">
+                        SCORE CATEGORY
+                    </span>
+
+                    <span class="result-symbol">
+                        ◆
+                    </span>
+
+                </div>
+
+
+                <div class="category-value">
+                    {{ result.score_category }}
+                </div>
+
+
+                <p>
+                    Rule-based nutritional classification
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             NUTRITION PER 100G
+        ================================================== -->
+
+        <div class="nutrition-result-card">
+
+
+            <div class="nutrition-result-header">
+
+                <div>
+
+                    <span class="section-kicker">
+                        STANDARDIZED PROFILE
+                    </span>
+
+                    <h3>
+                        Nutrition per 100g
+                    </h3>
+
+                </div>
+
+
+                <span class="standard-badge">
+                    Per 100g
+                </span>
+
+            </div>
+
+
+            <div class="nutrition-result-grid">
+
+
+                <!-- Calories -->
+
+                <div class="nutrition-result-item">
+
+                    <span>
+                        Calories
+                    </span>
+
+                    <strong>
+
+                        {{ result.calories_per_100g|round(2) }}
+
+                        <small>
+                            kcal
+                        </small>
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- Sugar -->
+
+                <div class="nutrition-result-item">
+
+                    <span>
+                        Sugar
+                    </span>
+
+                    <strong>
+
+                        {{ result.sugar_per_100g|round(2) }}
+
+                        <small>
+                            g
+                        </small>
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- Saturated Fat -->
+
+                <div class="nutrition-result-item">
+
+                    <span>
+                        Saturated Fat
+                    </span>
+
+                    <strong>
+
+                        {{ result.saturated_fat_per_100g|round(2) }}
+
+                        <small>
+                            g
+                        </small>
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- Sodium -->
+
+                <div class="nutrition-result-item">
+
+                    <span>
+                        Sodium
+                    </span>
+
+                    <strong>
+
+                        {{ result.sodium_per_100g|round(2) }}
+
+                        <small>
+                            mg
+                        </small>
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- Protein -->
+
+                <div class="nutrition-result-item">
+
+                    <span>
+                        Protein
+                    </span>
+
+                    <strong>
+
+                        {{ result.protein_per_100g|round(2) }}
+
+                        <small>
+                            g
+                        </small>
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- Fiber -->
+
+                <div class="nutrition-result-item">
+
+                    <span>
+                        Dietary Fiber
+                    </span>
+
+                    <strong>
+
+                        {{ result.fiber_per_100g|round(2) }}
+
+                        <small>
+                            g
+                        </small>
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             INTERPRETATION
+        ================================================== -->
+
+        <div class="result-explanation">
+
+
+            <div class="explanation-icon">
+                ✦
+            </div>
+
+
+            <div>
+
+                <strong>
+
+                    How NutriLens AI evaluates
+                    {{ result.product_name }}
+
+                </strong>
+
+
+                <p>
+
+                    The system converts the nutrition values
+                    to a standardized per-100g format and
+                    calculates a project-defined health score.
+
+                    The Random Forest machine-learning model
+                    then predicts the product's nutritional
+                    category using the standardized nutrition
+                    features.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             DISCLAIMER
+        ================================================== -->
+
+        <div class="result-disclaimer">
+
+            <span>
+                ⓘ
+            </span>
+
+            This project is an educational
+            nutrition-analysis system.
+
+            The generated score is not a medical diagnosis
+            or an official food-health certification.
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+</main>
+
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="footer">
+
+    <div class="footer-container">
+
+
+        <div class="footer-brand">
+
+
+            <div class="brand">
+
+                <div class="brand-icon">
+
+                    <span>
+                        NL
+                    </span>
+
+                </div>
+
+
+                <div class="brand-text">
+
+                    <strong>
+                        NutriLens
+                    </strong>
+
+                    <small>
+                        AI
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <p>
+
+                AI-powered nutritional intelligence
+                for packaged food.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="footer-links">
+
+            <a href="/">
+                Analyzer
+            </a>
+
+            <a href="/history">
+                History
+            </a>
+
+            <a href="/dashboard">
+                Dashboard
+            </a>
+
+            <a href="/methodology">
+                Methodology
+            </a>
+
+        </div>
+
+
+
+        <div class="footer-copy">
+
+            <span>
+
+                Built with Python • Flask • Machine Learning
+
+            </span>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+</body>
+
+</html>
